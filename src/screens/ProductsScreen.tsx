@@ -1,10 +1,11 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  RefreshControl,
 } from 'react-native';
 import { ProductsContext } from '../context/ProductsContext';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -14,7 +15,9 @@ interface Props
   extends StackScreenProps<ProductsStackParams, 'ProductsScreen'> {}
 
 export const ProductsScreen = ({ navigation }: Props) => {
-  const { products, loadProducts } = useContext(ProductsContext);
+
+  const { products, loadProducts, deleteProduct } = useContext(ProductsContext);
+  // const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -30,7 +33,11 @@ export const ProductsScreen = ({ navigation }: Props) => {
     });
   }, []);
 
-  //TODO: hacer un pull to refresh
+  // const loadProductsFromBackend = async () => {
+  //   setIsRefreshing(true);
+  //   await loadProducts();
+  //   setIsRefreshing(false);
+  // };
 
   return (
     <View style={styles.container}>
@@ -38,19 +45,35 @@ export const ProductsScreen = ({ navigation }: Props) => {
         data={products}
         keyExtractor={(p) => p._id}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() =>
-              navigation.navigate('ProductScreen', {
-                id: item._id,
-                name: item.nombre,
-              })
-            }
-          >
-            <Text style={styles.productName}>{item.nombre}</Text>
-          </TouchableOpacity>
+          <View style={styles.touchableContainer}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() =>
+                navigation.navigate('ProductScreen', {
+                  id: item._id,
+                  name: item.nombre,
+                })
+              }
+            >
+              <Text style={styles.productName}>{item.nombre}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => deleteProduct(item._id)}
+            >
+              <Text>Eliminar</Text>
+            </TouchableOpacity>
+          </View>
         )}
         ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
+
+        // refreshControl={
+        //   <RefreshControl
+        //     refreshing={isRefreshing}
+        //     onRefresh={loadProductsFromBackend}
+        //   />
+        // }
       />
     </View>
   );
@@ -69,5 +92,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: 'rgba(0,0,0,0.1)',
     marginVertical: 5,
+  },
+  touchableContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });

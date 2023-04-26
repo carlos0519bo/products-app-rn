@@ -1,8 +1,10 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { ProductsScreen } from '../screens/ProductsScreen';
 import { ProductScreen } from '../screens/ProductScreen';
+import { CameraScreen } from '../screens/CameraScreen';
 
 export type ProductsStackParams = {
+  CameraScreen: undefined;
   ProductsScreen: undefined;
   ProductScreen: { id?: string; name?: string };
 };
@@ -27,6 +29,11 @@ export const ProductsNavigator = () => {
         name="ProductScreen"
         component={ProductScreen}
         options={{ title: 'Producto' }}
+      />
+      <Stack.Screen
+        name="CameraScreen"
+        component={CameraScreen}
+        options={{ title: 'Camera', headerShown: false }}
       />
     </Stack.Navigator>
   );
